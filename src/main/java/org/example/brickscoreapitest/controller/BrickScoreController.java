@@ -8,6 +8,6 @@ public class BrickScoreController {
 
     @GetMapping("/api/hello")
     public String hello() {
-        return "안녕 !";
+        return "안녕 도커테스트야!";
     }
 }

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # MySQL 데이터베이스
+  db:
+    image: mysql:8.0
+    container_name: brickscore-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: brickscore
+      MYSQL_USER: brickuser
+      MYSQL_PASSWORD: brickpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - brickscore-network
+
+  # Spring Boot 앱
+  app:
+    build: .
+    container_name: brickscore-app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/brickscore
+      SPRING_DATASOURCE_USERNAME: brickuser
+      SPRING_DATASOURCE_PASSWORD: brickpass
+    ports:
+      - "8080:8080"
+    networks:
+      - brickscore-network
+
+networks:
+  brickscore-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
