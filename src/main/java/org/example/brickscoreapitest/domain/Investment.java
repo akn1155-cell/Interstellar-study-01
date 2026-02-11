@@ -1,11 +1,13 @@
 package org.example.brickscoreapitest.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "investments")
 @Getter
 @NoArgsConstructor
 public class Investment {
@@ -14,18 +16,29 @@ public class Investment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @Column(nullable = false)
+    private Long userId; // 투자자 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
+    @JoinColumn(name = "product_id")
+    private Product product; // 상품
 
-    private Long amount;
+    @Column(nullable = false)
+    private Long amount; // 투자금액
 
-    private LocalDateTime investedAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private LocalDateTime investedAt; // 투자시간
 
-    public Investment(Long userId, Product product, Long amount) {
+    // 생성자
+    private Investment(Long userId, Product product, Long amount) {
         this.userId = userId;
         this.product = product;
         this.amount = amount;
+        this.investedAt = LocalDateTime.now();
+    }
+
+    // 정적 팩토리
+    public static Investment create(Long userId, Product product, Long amount) {
+        return new Investment(userId, product, amount);
     }
 }
