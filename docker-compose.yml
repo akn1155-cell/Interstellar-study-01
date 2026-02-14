@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # MySQL 데이터베이스
   db:
     image: mysql:8.0
     container_name: brickscore-db
@@ -11,18 +8,23 @@ services:
       MYSQL_USER: brickuser
       MYSQL_PASSWORD: brickpass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - brickscore-network
+    healthcheck: # ← 추가!
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "brickuser", "-pbrickpass" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
-  # Spring Boot 앱
   app:
     build: .
     container_name: brickscore-app
     depends_on:
-      - db
+      db:
+        condition: service_healthy  # ← 수정! DB가 healthy될 때까지 대기
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/brickscore
       SPRING_DATASOURCE_USERNAME: brickuser
