@@ -10,7 +10,7 @@ services:
       MYSQL_USER: brickuser
       MYSQL_PASSWORD: brickpass
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -36,25 +36,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-
-  app:
-    build: .
-    container_name: brickscore-app
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:  # ← 추가!
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/brickscore
-      SPRING_DATASOURCE_USERNAME: brickuser
-      SPRING_DATASOURCE_PASSWORD: brickpass
-      SPRING_REDIS_HOST: redis  # ← 추가!
-      SPRING_REDIS_PORT: 6379
-    ports:
-      - "8080:8080"
-    networks:
-      - brickscore-network
 
 networks:
   brickscore-network:
